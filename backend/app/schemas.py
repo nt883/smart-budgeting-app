@@ -1,4 +1,7 @@
 from pydantic import BaseModel, EmailStr
+from datetime import date as date_type
+from typing import Optional
+
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -11,3 +14,21 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class TransactionCreate(BaseModel):
+    amount: float
+    category: str
+    description: Optional[str] = None
+    date: date_type
+    type: str  # "income" or "expense"
+
+class TransactionResponse(BaseModel):
+    id: int
+    amount: float
+    category: str
+    description: Optional[str]
+    date: date_type
+    type: str
+
+    class Config:
+        from_attributes = True    
