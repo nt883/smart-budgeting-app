@@ -31,4 +31,19 @@ class TransactionResponse(BaseModel):
     type: str
 
     class Config:
-        from_attributes = True    
+        from_attributes = True   
+
+class BudgetCreate(BaseModel):
+    category: str
+    monthly_limit: float
+    month: str  # "2026-07"
+
+class BudgetResponse(BaseModel):
+    id: int
+    category: str
+    monthly_limit: float
+    month: str
+
+    class Config:
+        from_attributes = True
+
