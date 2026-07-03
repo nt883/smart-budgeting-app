@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.database import engine, Base
+from app.models import user  # noqa: F401
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Smart Budgeting App API")
 
-# Allow the frontend (running on a different port/domain) to talk to this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this to Ndivhuwo's actual frontend URL later
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
