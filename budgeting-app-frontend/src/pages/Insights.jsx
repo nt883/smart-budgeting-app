@@ -1,41 +1,52 @@
-const mockInsights = [
-  { id: 1, type: 'trend', message: 'You spent 32% more on takeaways this month than last month.' },
-  { id: 2, type: 'forecast', message: 'If you continue at this pace, you will spend R14,000 this year on takeaways.' },
-  { id: 3, type: 'anomaly', message: 'This grocery transaction (R2,400) is 3x higher than your usual grocery spend.' },
-  { id: 4, type: 'suggestion', message: 'Cutting your daily coffee by R25 could save you about R750 this month.' },
-];
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { getInsights } from '../api/insights';
 
 const typeLabels = {
-  trend: 'Trends',
+  trends: 'Trends',
   forecast: 'Forecasts',
-  anomaly: 'Anomalies',
-  suggestion: 'Suggestions',
+  anomalies: 'Anomalies',
+  suggestions: 'Suggestions',
 };
 
 const typeColors = {
-  trend: '#378ADD',
+  trends: '#378ADD',
   forecast: '#1D9E75',
-  anomaly: '#D85A30',
-  suggestion: '#B4B2A9',
+  anomalies: '#D85A30',
+  suggestions: '#B4B2A9',
 };
 
 function Insights() {
-  const groups = ['trend', 'forecast', 'anomaly', 'suggestion'];
+  const { token } = useAuth();
+  const [insights, setInsights] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getInsights(token)
+      .then(res => setInsights(res.data))
+      .catch(err => console.error('Failed to load insights:', err))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  if (loading) return <div style={{ padding: '2rem' }}>Loading insights...</div>;
+  if (!insights) return <div style={{ padding: '2rem' }}>Failed to load insights.</div>;
+
+  const groups = ['trends', 'forecast', 'anomalies', 'suggestions'];
 
   return (
     <div style={{ padding: '2rem' }}>
       <h2>Insights</h2>
 
       {groups.map(type => {
-        const items = mockInsights.filter(i => i.type === type);
-        if (items.length === 0) return null;
+        const messages = insights[type];
+        if (!messages || messages.length === 0) return null;
 
         return (
           <div key={type} style={{ marginBottom: '20px' }}>
             <h3 style={{ color: typeColors[type] }}>{typeLabels[type]}</h3>
-            {items.map(item => (
+            {messages.map((msg, i) => (
               <div
-                key={item.id}
+                key={i}
                 style={{
                   background: '#f5f5f5',
                   borderLeft: `4px solid ${typeColors[type]}`,
@@ -44,7 +55,7 @@ function Insights() {
                   borderRadius: '4px',
                 }}
               >
-                {item.message}
+                {msg}
               </div>
             ))}
           </div>
