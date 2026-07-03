@@ -1,6 +1,8 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date as date_type
 from typing import Optional
+from typing import Dict
+
 
 
 class UserCreate(BaseModel):
@@ -46,4 +48,11 @@ class BudgetResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class DashboardSummary(BaseModel):
+    total_income: float
+    total_expenses: float
+    net_balance: float
+    spend_by_category: Dict[str, float]
+
 

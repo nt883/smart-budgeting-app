@@ -6,6 +6,7 @@ from app.routers import auth
 from app.models import transaction  # noqa: F401
 from app.routers import transactions
 from app.routers import auth, transactions, budgets
+from app.routers import auth, transactions, budgets, dashboard
 
 
 
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(budgets.router)
+app.include_router(dashboard.router)
 
 @app.get("/")
 def root():

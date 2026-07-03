@@ -10,7 +10,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # SQLAlchemy needs the psycopg2 driver specified explicitly
 DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True, #makes SQLAlchemy test a connection before using it and silently reconnect if it's gone stale
+    pool_recycle=300
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
