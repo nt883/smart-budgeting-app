@@ -2,6 +2,8 @@ from pydantic import BaseModel, EmailStr
 from datetime import date as date_type
 from typing import Optional
 from typing import Dict, List
+from datetime import date as date_type
+
 
 
 
@@ -60,4 +62,27 @@ class InsightsResponse(BaseModel):
     forecast: List[str]
     anomalies: List[str]
     suggestions: List[str]
+
+
+class GoalCreate(BaseModel):
+    name: str
+    target_amount: float
+    target_date: date_type
+
+class GoalResponse(BaseModel):
+    id: int
+    name: str
+    target_amount: float
+    target_date: date_type
+    saved_amount: float
+
+    class Config:
+        from_attributes = True
+
+class GoalUpdateSavings(BaseModel):
+    amount_to_add: float
+
+class AffordCheckResponse(BaseModel):
+    can_afford: bool
+    message: str    
 
