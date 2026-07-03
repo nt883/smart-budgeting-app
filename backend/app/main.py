@@ -7,7 +7,7 @@ from app.models import transaction  # noqa: F401
 from app.routers import transactions
 from app.routers import auth, transactions, budgets
 from app.routers import auth, transactions, budgets, dashboard
-
+from app.routers import auth, transactions, budgets, dashboard, insights
 
 
 
@@ -26,6 +26,7 @@ app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(budgets.router)
 app.include_router(dashboard.router)
+app.include_router(insights.router)
 
 @app.get("/")
 def root():
