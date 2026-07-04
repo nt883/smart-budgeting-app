@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getBudgets, createBudget, deleteBudget } from '../api/budgets';
 import { getTransactions } from '../api/transactions';
+import { CATEGORIES } from '../constants/categories';
 
 function Budgets() {
   const { token } = useAuth();
@@ -69,7 +70,10 @@ function Budgets() {
       </div>
 
       <form onSubmit={handleSubmit} className="form-card field-row">
-        <input type="text" name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
+        <select name="category" value={form.category} onChange={handleChange} required>
+  <option value="" disabled>Select category</option>
+  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+</select>
         <input type="number" name="monthly_limit" placeholder="Monthly limit" value={form.monthly_limit} onChange={handleChange} required />
         <button type="submit" className="btn btn-primary">Save budget</button>
       </form>

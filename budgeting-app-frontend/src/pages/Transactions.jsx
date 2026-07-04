@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction, importCsv } from '../api/transactions';
 import CsvImport from '../components/CsvImport';
+import { CATEGORIES } from '../constants/categories';
 
 function Transactions() {
   const { token } = useAuth();
@@ -77,7 +78,10 @@ function Transactions() {
       <form onSubmit={handleSubmit} className="form-card field-row">
         <input type="date" name="date" value={form.date} onChange={handleChange} required />
         <input type="text" name="description" placeholder="Description" value={form.description} onChange={handleChange} />
-        <input type="text" name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
+        <select name="category" value={form.category} onChange={handleChange} required>
+  <option value="" disabled>Select category</option>
+  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+</select>
         <input type="number" name="amount" placeholder="Amount" value={form.amount} onChange={handleChange} required />
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="expense">Expense</option>
