@@ -4,9 +4,6 @@ from typing import Optional
 from typing import Dict, List
 from datetime import date as date_type
 
-
-
-
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
@@ -86,3 +83,38 @@ class AffordCheckResponse(BaseModel):
     can_afford: bool
     message: str    
 
+class ShoppingItemInput(BaseModel):
+    item_name: str
+    quantity: int = 1
+
+class ShoppingListCreate(BaseModel):
+    budget: float
+    items: List[ShoppingItemInput]
+
+class ShoppingListResponse(BaseModel):
+    id: int
+    budget: float
+
+    class Config:
+        from_attributes = True
+
+class PriceCatalogEntry(BaseModel):
+    item_name: str
+    shop_name: str
+    price: float
+
+class OptimizedItem(BaseModel):
+    item_name: str
+    requested_quantity: int
+    included_quantity: int
+    best_shop: str
+    unit_price: float
+    total_price: float
+    included: bool
+
+class OptimizeResponse(BaseModel):
+    items: List[OptimizedItem]
+    total_cost: float
+    budget: float
+    within_budget: bool
+    dropped_items: List[str]

@@ -10,6 +10,8 @@ from app.routers import auth, transactions, budgets, dashboard
 from app.routers import auth, transactions, budgets, dashboard, insights
 from app.models import user, transaction, budget, goal  # noqa: F401
 from app.routers import auth, transactions, budgets, dashboard, insights, goals
+from app.models import user, transaction, budget, goal, shopping  # noqa: F401
+from app.routers import auth, transactions, budgets, dashboard, insights, goals, shopping
 
 
 
@@ -30,6 +32,8 @@ app.include_router(budgets.router)
 app.include_router(dashboard.router)
 app.include_router(insights.router)
 app.include_router(goals.router)
+app.include_router(shopping.router)
+app.include_router(shopping.price_router)
 
 @app.get("/")
 def root():
