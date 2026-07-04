@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getTransactions, createTransaction, updateTransaction, deleteTransaction } from '../api/transactions';
+import { getTransactions, createTransaction, updateTransaction, deleteTransaction, importCsv } from '../api/transactions';
 import CsvImport from '../components/CsvImport';
 
 function Transactions() {
@@ -51,6 +51,18 @@ function Transactions() {
     }
   };
 
+  const handleCsvImport = async (file) => {
+    try {
+      const res = await importCsv(token, file);
+      alert(res.data.message);
+      const refreshed = await getTransactions(token);
+      setTransactions(refreshed.data);
+    } catch (err) {
+      console.error('CSV import failed:', err);
+      alert(err.response?.data?.detail || 'CSV import failed');
+    }
+  };
+
   return (
     <div className="page">
       <div className="page-header">
@@ -60,16 +72,7 @@ function Transactions() {
         </div>
       </div>
 
-      <CsvImport onImport={async (rows) => {
-        for (const row of rows) {
-          try {
-            const res = await createTransaction(token, { ...row, amount: Number(row.amount) });
-            setTransactions(prev => [...prev, res.data]);
-          } catch (err) {
-            console.error('Failed to import row:', row, err);
-          }
-        }
-      }} />
+      <CsvImport onImport={handleCsvImport} />
 
       <form onSubmit={handleSubmit} className="form-card field-row">
         <input type="date" name="date" value={form.date} onChange={handleChange} required />

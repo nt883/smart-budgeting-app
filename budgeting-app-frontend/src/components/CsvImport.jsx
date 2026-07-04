@@ -3,14 +3,14 @@ import Papa from 'papaparse';
 
 function CsvImport({ onImport }) {
   const [preview, setPreview] = useState([]);
-  const [fileName, setFileName] = useState('');
+  const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleFile = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setFileName(file.name);
-    Papa.parse(file, {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    setFile(selectedFile);
+    Papa.parse(selectedFile, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => setPreview(results.data),
@@ -18,9 +18,9 @@ function CsvImport({ onImport }) {
   };
 
   const confirmImport = () => {
-    onImport(preview);
+    onImport(file);
     setPreview([]);
-    setFileName('');
+    setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -28,7 +28,7 @@ function CsvImport({ onImport }) {
     <div style={{ marginBottom: '18px' }}>
       <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFile} style={{ display: 'none' }} id="csv-upload" />
       <label htmlFor="csv-upload" className="btn btn-quiet" style={{ display: 'inline-flex', cursor: 'pointer' }}>
-        {fileName || 'Import CSV'}
+        {file ? file.name : 'Import CSV'}
       </label>
 
       {preview.length > 0 && (

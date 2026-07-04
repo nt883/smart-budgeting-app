@@ -1,44 +1,42 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { createShoppingList, optimizeShoppingList } from '../api/shopping';
 
 function ShoppingList() {
+  const { token } = useAuth();
   const [items, setItems] = useState([]);
   const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [budget, setBudget] = useState('');
   const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const addItem = (e) => {
     e.preventDefault();
-    setItems([...items, { id: Date.now(), name: itemName, quantity }]);
+    setItems([...items, { id: Date.now(), name: itemName, quantity: Number(quantity) }]);
     setItemName('');
     setQuantity('1');
   };
 
   const removeItem = (id) => setItems(items.filter(i => i.id !== id));
 
-  const optimize = () => {
-    const mockPrices = { bread: 22, milk: 25, rice: 45, chicken: 85, 'dish soap': 30 };
-    let total = 0;
-    const fits = [];
-    const dropped = [];
-    const swaps = [];
-
-    items.forEach(item => {
-      const key = item.name.toLowerCase();
-      const price = (mockPrices[key] || 30) * Number(item.quantity);
-      if (total + price <= Number(budget)) {
-        total += price;
-        fits.push(item);
-      } else {
-        dropped.push(item);
-      }
-    });
-
-    if (fits.find(i => i.name.toLowerCase() === 'rice')) {
-      swaps.push({ item: 'Rice', suggestion: 'Store-brand rice', savings: 12 });
+  const optimize = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const createRes = await createShoppingList(token, {
+        budget: Number(budget),
+        items: items.map(i => ({ item_name: i.name, quantity: i.quantity })),
+      });
+      const optimizeRes = await optimizeShoppingList(token, createRes.data.id);
+      setResults(optimizeRes.data);
+    } catch (err) {
+      console.error('Optimize failed:', err);
+      setError(err.response?.data?.detail || 'Failed to optimize list');
+    } finally {
+      setLoading(false);
     }
-
-    setResults({ total, fits, dropped, swaps });
   };
 
   return (
@@ -74,21 +72,43 @@ function ShoppingList() {
             <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="R" style={{ width: '140px' }} />
           </div>
 
-          <button onClick={optimize} className="btn btn-primary" style={{ width: '100%', marginTop: 16 }}>Optimize</button>
+          {error && <p className="auth-error" style={{ marginTop: 12 }}>{error}</p>}
+
+          <button
+            onClick={optimize}
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: 16 }}
+            disabled={loading || items.length === 0 || !budget}
+          >
+            {loading ? 'Optimizing...' : 'Optimize'}
+          </button>
         </div>
 
         <div className="card">
           <p className="stat-label" style={{ marginBottom: 14 }}>Results</p>
+
           {!results && <div className="empty-state">Add items and click Optimize to see suggestions.</div>}
+
           {results && (
             <>
-              <div className="insight-card">Fits in budget: <span className="mono">R{results.total}</span> total</div>
-              {results.dropped.map(item => (
-                <div key={item.id} className="insight-card"><strong>Suggested drop:</strong> {item.name}</div>
+              <div className="insight-card">
+                Total: <span className="mono">R{results.total_cost}</span> of R{results.budget}
+                {' — '}{results.within_budget ? 'within budget' : 'over budget'}
+              </div>
+
+              {results.items.map((item, i) => (
+                <div key={i} className="insight-card">
+                  <strong>{item.item_name}</strong> — {item.included_quantity} of {item.requested_quantity} included
+                  {item.included && <> at <span className="mono">{item.best_shop}</span>, R{item.unit_price}/unit (R{item.total_price} total)</>}
+                  {!item.included && <> — no price data available</>}
+                </div>
               ))}
-              {results.swaps.map((s, i) => (
-                <div key={i} className="insight-card"><strong>Swap:</strong> {s.suggestion} — save R{s.savings}</div>
-              ))}
+
+              {results.dropped_items.length > 0 && (
+                <div className="insight-card">
+                  <strong>Short on:</strong> {results.dropped_items.join(', ')}
+                </div>
+              )}
             </>
           )}
         </div>
