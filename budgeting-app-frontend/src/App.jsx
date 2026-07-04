@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -15,7 +14,7 @@ import ShoppingList from './pages/ShoppingList';
 
 const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password'];
 
-function Shell({ collapsed, setCollapsed, children }) {
+function Shell({ children }) {
   const location = useLocation();
   const isPublic = PUBLIC_PATHS.includes(location.pathname);
 
@@ -23,21 +22,17 @@ function Shell({ collapsed, setCollapsed, children }) {
 
   return (
     <>
-      <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
-      <div className={`app-content ${collapsed ? 'app-content--collapsed' : ''}`}>
-        {children}
-      </div>
+      <Navbar />
+      <div className="app-content-top">{children}</div>
     </>
   );
 }
 
 function App() {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Shell collapsed={collapsed} setCollapsed={setCollapsed}>
+        <Shell>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

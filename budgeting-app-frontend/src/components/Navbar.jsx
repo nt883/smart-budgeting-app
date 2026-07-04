@@ -33,12 +33,6 @@ const icons = {
       <path d="M5 7h10l-1 9H6L5 7z"/><path d="M7.5 7V5.5a2.5 2.5 0 015 0V7"/>
     </svg>
   ),
-  collapseLeft: (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4l-6 6 6 6"/></svg>
-  ),
-  collapseRight: (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 4l6 6-6 6"/></svg>
-  ),
   logout: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M8 16H4.5A1.5 1.5 0 013 14.5v-9A1.5 1.5 0 014.5 4H8"/><path d="M13 13l4-3-4-3M17 10H8"/>
@@ -46,7 +40,7 @@ const icons = {
   ),
 };
 
-function Navbar({ collapsed, setCollapsed }) {
+function Navbar() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,31 +62,25 @@ function Navbar({ collapsed, setCollapsed }) {
   const initial = user?.email ? user.email[0].toUpperCase() : '?';
 
   return (
-    <nav className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
-      <div className="sidebar-top">
-        {!collapsed && <span className="sidebar-brand">[ledger]</span>}
-        <button className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
-          {collapsed ? icons.collapseRight : icons.collapseLeft}
-        </button>
-      </div>
+    <nav className="topbar">
+      <span className="topbar-brand">[ledger]</span>
 
-      <div className="sidebar-nav">
+      <div className="topbar-nav">
         {links.map(link => {
           const active = location.pathname === link.to;
           return (
-            <Link key={link.to} to={link.to} className={`sidebar-link ${active ? 'sidebar-link--active' : ''}`}>
+            <Link key={link.to} to={link.to} className={`topbar-link ${active ? 'topbar-link--active' : ''}`}>
               {link.icon}
-              {!collapsed && <span>{link.label}</span>}
-              {!collapsed && active && <span className="sidebar-cursor" />}
+              <span>{link.label}</span>
             </Link>
           );
         })}
       </div>
 
-      <div className="sidebar-footer">
-        <div className="sidebar-avatar">{initial}</div>
-        {!collapsed && <span className="sidebar-user-email">{user?.email}</span>}
-        <button className="sidebar-logout" onClick={handleLogout} title="Log out">
+      <div className="topbar-right">
+        <div className="topbar-avatar">{initial}</div>
+        <span className="topbar-user-email">{user?.email}</span>
+        <button className="topbar-logout" onClick={handleLogout} title="Log out">
           {icons.logout}
         </button>
       </div>
