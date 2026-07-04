@@ -51,7 +51,7 @@ function Navbar() {
   };
 
   const links = [
-    { to: '/', label: 'Dashboard', icon: icons.dashboard },
+    { to: '/dashboard', label: 'Dashboard', icon: icons.dashboard },
     { to: '/transactions', label: 'Transactions', icon: icons.transactions },
     { to: '/budgets', label: 'Budgets', icon: icons.budgets },
     { to: '/insights', label: 'Insights', icon: icons.insights },

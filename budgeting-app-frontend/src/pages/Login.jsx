@@ -20,7 +20,7 @@ function Login() {
     try {
       const res = await loginApi(email, password);
       login(res.data.access_token, { email });
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed');
     } finally {

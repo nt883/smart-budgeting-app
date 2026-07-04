@@ -25,7 +25,7 @@ function Signup() {
     try {
       const res = await signupApi(email, password);
       login(res.data.access_token, { email });
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed');
     } finally {
