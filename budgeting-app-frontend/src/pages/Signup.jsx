@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { signup as signupApi } from '../api/auth';
 
@@ -28,17 +28,26 @@ function Signup() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '4rem' }}>
-      <form onSubmit={handleSubmit} style={{ width: '320px' }}>
-        <h2>Sign up</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <label>Confirm password</label>
-        <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-        <button type="submit">Sign up</button>
+    <div className="auth-shell">
+      <form onSubmit={handleSubmit} className="auth-card">
+        <span className="brand-mark">[ledger]</span>
+        <h2 className="auth-title">Sign up</h2>
+        <p className="auth-sub">Start tracking, in under a minute.</p>
+        {error && <p className="auth-error">{error}</p>}
+        <div className="auth-field">
+          <label className="field-label">Email</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="auth-field">
+          <label className="field-label">Password</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+        <div className="auth-field">
+          <label className="field-label">Confirm password</label>
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+        </div>
+        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Sign up</button>
+        <p className="auth-footer-link">Already have an account? <Link to="/login">Log in</Link></p>
       </form>
     </div>
   );

@@ -17,14 +17,11 @@ function Transactions() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = { ...form, amount: Number(form.amount) };
-
     try {
       if (editingId) {
         const res = await updateTransaction(token, editingId, payload);
@@ -55,8 +52,13 @@ function Transactions() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Transactions</h2>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Records</p>
+          <h2 className="page-title">Transactions</h2>
+        </div>
+      </div>
 
       <CsvImport onImport={async (rows) => {
         for (const row of rows) {
@@ -69,7 +71,7 @@ function Transactions() {
         }
       }} />
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSubmit} className="form-card field-row">
         <input type="date" name="date" value={form.date} onChange={handleChange} required />
         <input type="text" name="description" placeholder="Description" value={form.description} onChange={handleChange} />
         <input type="text" name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
@@ -78,29 +80,29 @@ function Transactions() {
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
-        <button type="submit">{editingId ? 'Update' : 'Add'} transaction</button>
+        <button type="submit" className="btn btn-primary">{editingId ? 'Update' : 'Add'} transaction</button>
       </form>
 
-      {loading && <p>Loading transactions...</p>}
+      {loading && <div className="skeleton" style={{ height: 240 }} />}
+      {!loading && transactions.length === 0 && <div className="empty-state">No transactions yet — add one above or import a CSV.</div>}
 
-      {!loading && (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      {!loading && transactions.length > 0 && (
+        <table className="ledger-table">
           <thead>
-            <tr>
-              <th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Type</th><th></th>
-            </tr>
+            <tr><th>Date</th><th>Description</th><th>Category</th><th style={{textAlign:'right'}}>Amount</th><th></th></tr>
           </thead>
           <tbody>
             {transactions.map(t => (
               <tr key={t.id}>
-                <td>{t.date}</td>
+                <td className="mono">{t.date}</td>
                 <td>{t.description}</td>
-                <td>{t.category}</td>
-                <td>{t.amount}</td>
-                <td>{t.type}</td>
-                <td>
-                  <button onClick={() => handleEdit(t)}>Edit</button>
-                  <button onClick={() => handleDelete(t.id)}>Delete</button>
+                <td><span className="tag">{t.category}</span></td>
+                <td style={{ textAlign: 'right' }}>
+                  <span className={`amount ${t.type === 'income' ? 'amount--in' : 'amount--out'}`}>R{t.amount}</span>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button className="btn btn-quiet" onClick={() => handleEdit(t)} style={{ marginRight: 6 }}>Edit</button>
+                  <button className="btn btn-quiet" onClick={() => handleDelete(t.id)}>Delete</button>
                 </td>
               </tr>
             ))}

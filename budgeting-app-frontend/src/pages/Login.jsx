@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../api/auth';
 
@@ -23,15 +23,22 @@ function Login() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '4rem' }}>
-      <form onSubmit={handleSubmit} style={{ width: '320px' }}>
-        <h2>Log in</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Log in</button>
+    <div className="auth-shell">
+      <form onSubmit={handleSubmit} className="auth-card">
+        <span className="brand-mark">[ledger]</span>
+        <h2 className="auth-title">Log in</h2>
+        <p className="auth-sub">Welcome back to your budget.</p>
+        {error && <p className="auth-error">{error}</p>}
+        <div className="auth-field">
+          <label className="field-label">Email</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="auth-field">
+          <label className="field-label">Password</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Log in</button>
+        <p className="auth-footer-link">No account? <Link to="/signup">Sign up</Link> · <Link to="/forgot-password">Forgot password</Link></p>
       </form>
     </div>
   );

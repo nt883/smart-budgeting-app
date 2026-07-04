@@ -2,19 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getInsights } from '../api/insights';
 
-const typeLabels = {
-  trends: 'Trends',
-  forecast: 'Forecasts',
-  anomalies: 'Anomalies',
-  suggestions: 'Suggestions',
-};
-
-const typeColors = {
-  trends: '#378ADD',
-  forecast: '#1D9E75',
-  anomalies: '#D85A30',
-  suggestions: '#B4B2A9',
-};
+const typeLabels = { trends: 'Trends', forecast: 'Forecasts', anomalies: 'Anomalies', suggestions: 'Suggestions' };
 
 function Insights() {
   const { token } = useAuth();
@@ -28,36 +16,28 @@ function Insights() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  if (loading) return <div style={{ padding: '2rem' }}>Loading insights...</div>;
-  if (!insights) return <div style={{ padding: '2rem' }}>Failed to load insights.</div>;
-
   const groups = ['trends', 'forecast', 'anomalies', 'suggestions'];
+  const hasAny = insights && groups.some(g => insights[g]?.length > 0);
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Insights</h2>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Signals</p>
+          <h2 className="page-title">Insights</h2>
+        </div>
+      </div>
 
-      {groups.map(type => {
+      {loading && <div className="skeleton" style={{ height: 240 }} />}
+      {!loading && !hasAny && <div className="empty-state">Not enough activity yet to generate insights.</div>}
+
+      {!loading && hasAny && groups.map(type => {
         const messages = insights[type];
         if (!messages || messages.length === 0) return null;
-
         return (
-          <div key={type} style={{ marginBottom: '20px' }}>
-            <h3 style={{ color: typeColors[type] }}>{typeLabels[type]}</h3>
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                style={{
-                  background: '#f5f5f5',
-                  borderLeft: `4px solid ${typeColors[type]}`,
-                  padding: '10px 14px',
-                  marginBottom: '8px',
-                  borderRadius: '4px',
-                }}
-              >
-                {msg}
-              </div>
-            ))}
+          <div key={type} style={{ marginBottom: '22px' }}>
+            <p className="insight-group-label">{typeLabels[type]}</p>
+            {messages.map((msg, i) => <div key={i} className="insight-card">{msg}</div>)}
           </div>
         );
       })}

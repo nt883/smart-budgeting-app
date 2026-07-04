@@ -8,7 +8,6 @@ function Goals() {
   const [form, setForm] = useState({ name: '', target_amount: '', target_date: '' });
   const [loading, setLoading] = useState(true);
   const [savingsInput, setSavingsInput] = useState({});
-
   const [affordItem, setAffordItem] = useState('');
   const [affordCost, setAffordCost] = useState('');
   const [affordResult, setAffordResult] = useState(null);
@@ -20,9 +19,7 @@ function Goals() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,54 +68,66 @@ function Goals() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Goals</h2>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Targets</p>
+          <h2 className="page-title">Goals</h2>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSubmit} className="form-card field-row">
         <input type="text" name="name" placeholder="Goal name" value={form.name} onChange={handleChange} required />
         <input type="number" name="target_amount" placeholder="Target amount" value={form.target_amount} onChange={handleChange} required />
         <input type="date" name="target_date" value={form.target_date} onChange={handleChange} required />
-        <button type="submit">Create goal</button>
+        <button type="submit" className="btn btn-primary">Create goal</button>
       </form>
 
-      {loading && <p>Loading goals...</p>}
+      {loading && <div className="skeleton" style={{ height: 140, marginBottom: 24 }} />}
+      {!loading && goals.length === 0 && <div className="empty-state" style={{ marginBottom: 24 }}>No goals yet — create your first one above.</div>}
 
-      {!loading && goals.map(g => {
-        const pct = Math.min((g.saved_amount / g.target_amount) * 100, 100);
-        return (
-          <div key={g.id} style={{ marginBottom: '16px', border: '1px solid #ccc', padding: '12px', borderRadius: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong>{g.name}</strong>
-              <button onClick={() => handleDelete(g.id)}>Delete</button>
+      <div style={{ display: 'grid', gap: '14px', marginBottom: '30px' }}>
+        {!loading && goals.map(g => {
+          const pct = Math.min((g.saved_amount / g.target_amount) * 100, 100);
+          return (
+            <div key={g.id} className="card card--interactive">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong>{g.name}</strong>
+                <button className="btn btn-quiet" onClick={() => handleDelete(g.id)}>Delete</button>
+              </div>
+              <p className="mono" style={{ fontSize: 13, color: 'var(--ash)', margin: '8px 0' }}>
+                R{g.saved_amount} <span style={{ color: 'var(--ash-dim)' }}>/ R{g.target_amount}</span> — by {g.target_date}
+              </p>
+              <div className="progress-track">
+                <div className="progress-fill" style={{ width: `${pct}%` }} />
+              </div>
+              <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                <input
+                  type="number"
+                  placeholder="Add savings"
+                  value={savingsInput[g.id] || ''}
+                  onChange={(e) => setSavingsInput({ ...savingsInput, [g.id]: e.target.value })}
+                  style={{ width: '130px' }}
+                />
+                <button className="btn btn-quiet" onClick={() => handleAddSavings(g.id)}>Add</button>
+              </div>
             </div>
-            <p>R{g.saved_amount} of R{g.target_amount} — by {g.target_date}</p>
-            <div style={{ background: '#eee', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
-              <div style={{ width: `${pct}%`, background: '#378ADD', height: '100%' }}></div>
-            </div>
-            <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
-              <input
-                type="number"
-                placeholder="Add savings"
-                value={savingsInput[g.id] || ''}
-                onChange={(e) => setSavingsInput({ ...savingsInput, [g.id]: e.target.value })}
-                style={{ width: '120px' }}
-              />
-              <button onClick={() => handleAddSavings(g.id)}>Add</button>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      <div style={{ marginTop: '30px', padding: '16px', background: '#f5f5f5', borderRadius: '8px' }}>
-        <h3>Can I afford this?</h3>
-        <form onSubmit={checkAfford} style={{ display: 'flex', gap: '8px' }}>
+      <div className="card">
+        <p className="eyebrow">Afford check</p>
+        <h3 style={{ marginBottom: 14 }}>Can I afford this?</h3>
+        <form onSubmit={checkAfford} className="field-row">
           <input type="text" placeholder="Item name" value={affordItem} onChange={(e) => setAffordItem(e.target.value)} required />
           <input type="number" placeholder="Cost" value={affordCost} onChange={(e) => setAffordCost(e.target.value)} required />
-          <button type="submit">Check</button>
+          <button type="submit" className="btn btn-primary">Check</button>
         </form>
         {affordResult && (
-          <p style={{ marginTop: '10px' }}>
-            <strong>{affordResult.can_afford ? 'Yes' : 'Not yet'}.</strong> {affordResult.message}
+          <p style={{ marginTop: 14, fontSize: 14 }}>
+            <span className={`status-dot ${affordResult.can_afford ? 'status-dot--empty' : 'status-dot--full'}`} style={{ marginRight: 8 }} />
+            <strong>{affordResult.can_afford ? 'Yes.' : 'Not yet.'}</strong> {affordResult.message}
           </p>
         )}
       </div>

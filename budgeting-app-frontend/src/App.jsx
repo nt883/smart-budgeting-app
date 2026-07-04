@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,14 +13,31 @@ import Insights from './pages/Insights';
 import Goals from './pages/Goals';
 import ShoppingList from './pages/ShoppingList';
 
+const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password'];
+
+function Shell({ collapsed, setCollapsed, children }) {
+  const location = useLocation();
+  const isPublic = PUBLIC_PATHS.includes(location.pathname);
+
+  if (isPublic) return <>{children}</>;
+
+  return (
+    <>
+      <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className={`app-content ${collapsed ? 'app-content--collapsed' : ''}`}>
+        {children}
+      </div>
+    </>
+  );
+}
+
 function App() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
-        <div style={{ marginLeft: collapsed ? '60px' : '200px', transition: 'margin-left 0.2s ease' }}>
+        <Shell collapsed={collapsed} setCollapsed={setCollapsed}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -32,7 +49,7 @@ function App() {
             <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
             <Route path="/shopping-list" element={<ProtectedRoute><ShoppingList /></ProtectedRoute>} />
           </Routes>
-        </div>
+        </Shell>
       </BrowserRouter>
     </AuthProvider>
   );

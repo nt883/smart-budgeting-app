@@ -9,8 +9,7 @@ function Budgets() {
   const [transactions, setTransactions] = useState([]);
   const [form, setForm] = useState({ category: '', monthly_limit: '' });
   const [loading, setLoading] = useState(true);
-
-  const currentMonth = new Date().toISOString().slice(0, 7); // "2026-07"
+  const currentMonth = new Date().toISOString().slice(0, 7);
 
   useEffect(() => {
     Promise.all([getBudgets(token, currentMonth), getTransactions(token)])
@@ -22,15 +21,12 @@ function Budgets() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const getSpent = (category) => {
-    return transactions
+  const getSpent = (category) =>
+    transactions
       .filter(t => t.category === category && t.type === 'expense' && t.date.slice(0, 7) === currentMonth)
       .reduce((sum, t) => sum + t.amount, 0);
-  };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,41 +54,54 @@ function Budgets() {
 
   const getStatus = (spent, limit) => {
     const pct = (spent / limit) * 100;
-    if (pct >= 100) return { color: 'red', label: 'Over budget' };
-    if (pct >= 80) return { color: 'orange', label: 'Near limit' };
-    return { color: 'green', label: 'On track' };
+    if (pct >= 100) return { dot: 'status-dot--full', label: 'Over budget' };
+    if (pct >= 80) return { dot: 'status-dot--half', label: 'Near limit' };
+    return { dot: 'status-dot--empty', label: 'On track' };
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Budgets</h2>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Limits</p>
+          <h2 className="page-title">Budgets</h2>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+      <form onSubmit={handleSubmit} className="form-card field-row">
         <input type="text" name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
         <input type="number" name="monthly_limit" placeholder="Monthly limit" value={form.monthly_limit} onChange={handleChange} required />
-        <button type="submit">Save budget</button>
+        <button type="submit" className="btn btn-primary">Save budget</button>
       </form>
 
-      {loading && <p>Loading budgets...</p>}
+      {loading && <div className="skeleton" style={{ height: 160 }} />}
+      {!loading && budgets.length === 0 && <div className="empty-state">No budgets set for this month yet.</div>}
 
-      {!loading && budgets.map(b => {
-        const spent = getSpent(b.category);
-        const pct = Math.min((spent / b.monthly_limit) * 100, 100);
-        const status = getStatus(spent, b.monthly_limit);
-        return (
-          <div key={b.id} style={{ marginBottom: '16px', border: '1px solid #ccc', padding: '12px', borderRadius: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong>{b.category}</strong>
-              <span style={{ color: status.color }}>{status.label}</span>
-              <button onClick={() => handleDelete(b.id)}>Delete</button>
+      <div style={{ display: 'grid', gap: '14px' }}>
+        {!loading && budgets.map(b => {
+          const spent = getSpent(b.category);
+          const pct = Math.min((spent / b.monthly_limit) * 100, 100);
+          const over = spent > b.monthly_limit;
+          const status = getStatus(spent, b.monthly_limit);
+          return (
+            <div key={b.id} className="card card--interactive">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <strong>{b.category}</strong>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <span className="status"><span className={`status-dot ${status.dot}`} />{status.label}</span>
+                  <button className="btn btn-quiet" onClick={() => handleDelete(b.id)}>Delete</button>
+                </div>
+              </div>
+              <p className="mono" style={{ fontSize: 13, color: 'var(--ash)', marginBottom: 8 }}>
+                R{spent} <span style={{ color: 'var(--ash-dim)' }}>/ R{b.monthly_limit}</span>
+              </p>
+              <div className="progress-track">
+                <div className={`progress-fill ${over ? 'progress-fill--over' : ''}`} style={{ width: `${pct}%` }} />
+              </div>
             </div>
-            <p>R{spent} of R{b.monthly_limit}</p>
-            <div style={{ background: '#eee', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
-              <div style={{ width: `${pct}%`, background: status.color, height: '100%' }}></div>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
