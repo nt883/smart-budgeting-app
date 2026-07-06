@@ -27,7 +27,14 @@ function CsvImport({ onImport }) {
   return (
     <div style={{ marginBottom: '18px' }}>
       <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFile} style={{ display: 'none' }} id="csv-upload" />
-      <label htmlFor="csv-upload" className="btn btn-quiet" style={{ display: 'inline-flex', cursor: 'pointer' }}>
+      <label
+        htmlFor="csv-upload"
+        className="btn"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, padding: '12px 20px' }}
+      >
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+          <path d="M10 13V4M6.5 7.5L10 4l3.5 3.5"/><path d="M4 14v1.5A1.5 1.5 0 005.5 17h9a1.5 1.5 0 001.5-1.5V14"/>
+        </svg>
         {file ? file.name : 'Import CSV'}
       </label>
 

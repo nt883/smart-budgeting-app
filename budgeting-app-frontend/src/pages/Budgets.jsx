@@ -10,6 +10,7 @@ function Budgets() {
   const [transactions, setTransactions] = useState([]);
   const [form, setForm] = useState({ category: '', monthly_limit: '' });
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
   const currentMonth = new Date().toISOString().slice(0, 7);
 
   useEffect(() => {
@@ -45,11 +46,14 @@ function Budgets() {
   };
 
   const handleDelete = async (id) => {
+    setDeletingId(id);
     try {
       await deleteBudget(token, id);
       setBudgets(budgets.filter(b => b.id !== id));
     } catch (err) {
       console.error('Failed to delete budget:', err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -71,9 +75,9 @@ function Budgets() {
 
       <form onSubmit={handleSubmit} className="form-card field-row">
         <select name="category" value={form.category} onChange={handleChange} required>
-  <option value="" disabled>Select category</option>
-  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-</select>
+          <option value="" disabled>Select category</option>
+          {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+        </select>
         <input type="number" name="monthly_limit" placeholder="Monthly limit" value={form.monthly_limit} onChange={handleChange} required />
         <button type="submit" className="btn btn-primary">Save budget</button>
       </form>
@@ -87,13 +91,17 @@ function Budgets() {
           const pct = Math.min((spent / b.monthly_limit) * 100, 100);
           const over = spent > b.monthly_limit;
           const status = getStatus(spent, b.monthly_limit);
+          const isDeleting = deletingId === b.id;
           return (
             <div key={b.id} className="card card--interactive">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                 <strong>{b.category}</strong>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <span className="status"><span className={`status-dot ${status.dot}`} />{status.label}</span>
-                  <button className="btn btn-quiet" onClick={() => handleDelete(b.id)}>Delete</button>
+                  <button className="btn btn-quiet" onClick={() => handleDelete(b.id)} disabled={isDeleting} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {isDeleting && <span className="spinner" />}
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
                 </div>
               </div>
               <p className="mono" style={{ fontSize: 13, color: 'var(--ash)', marginBottom: 8 }}>

@@ -8,6 +8,7 @@ function Goals() {
   const [form, setForm] = useState({ name: '', target_amount: '', target_date: '' });
   const [loading, setLoading] = useState(true);
   const [savingsInput, setSavingsInput] = useState({});
+  const [deletingId, setDeletingId] = useState(null);
   const [affordItem, setAffordItem] = useState('');
   const [affordCost, setAffordCost] = useState('');
   const [affordResult, setAffordResult] = useState(null);
@@ -49,11 +50,14 @@ function Goals() {
   };
 
   const handleDelete = async (id) => {
+    setDeletingId(id);
     try {
       await deleteGoal(token, id);
       setGoals(goals.filter(g => g.id !== id));
     } catch (err) {
       console.error('Failed to delete goal:', err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -89,11 +93,20 @@ function Goals() {
       <div style={{ display: 'grid', gap: '14px', marginBottom: '30px' }}>
         {!loading && goals.map(g => {
           const pct = Math.min((g.saved_amount / g.target_amount) * 100, 100);
+          const isDeleting = deletingId === g.id;
           return (
             <div key={g.id} className="card card--interactive">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <strong>{g.name}</strong>
-                <button className="btn btn-quiet" onClick={() => handleDelete(g.id)}>Delete</button>
+                <button
+                  className="btn btn-quiet"
+                  onClick={() => handleDelete(g.id)}
+                  disabled={isDeleting}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  {isDeleting && <span className="spinner" />}
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
               </div>
               <p className="mono" style={{ fontSize: 13, color: 'var(--ash)', margin: '8px 0' }}>
                 R{g.saved_amount} <span style={{ color: 'var(--ash-dim)' }}>/ R{g.target_amount}</span> — by {g.target_date}

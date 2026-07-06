@@ -38,6 +38,12 @@ const icons = {
       <path d="M8 16H4.5A1.5 1.5 0 013 14.5v-9A1.5 1.5 0 014.5 4H8"/><path d="M13 13l4-3-4-3M17 10H8"/>
     </svg>
   ),
+  settings: (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="10" cy="10" r="2.6"/>
+    <path d="M10 3v1.6M10 15.4V17M17 10h-1.6M4.6 10H3M14.9 5.1l-1.1 1.1M6.2 13.7l-1.1 1.1M14.9 14.9l-1.1-1.1M6.2 6.3L5.1 5.2"/>
+  </svg>
+),
 };
 
 function Navbar() {
@@ -78,12 +84,15 @@ function Navbar() {
       </div>
 
       <div className="topbar-right">
-        <div className="topbar-avatar">{initial}</div>
-        <span className="topbar-user-email">{user?.email}</span>
-        <button className="topbar-logout" onClick={handleLogout} title="Log out">
-          {icons.logout}
-        </button>
-      </div>
+  <Link to="/settings" className="topbar-logout" title="Settings">
+    {icons.settings}
+  </Link>
+  <div className="topbar-avatar">{initial}</div>
+  <span className="topbar-user-email">{user?.email}</span>
+  <button className="topbar-logout" onClick={handleLogout} title="Log out">
+    {icons.logout}
+  </button>
+</div>
     </nav>
   );
 }

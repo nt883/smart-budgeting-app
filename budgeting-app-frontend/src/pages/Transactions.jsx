@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction, importCsv } from '../api/transactions';
-import CsvImport from '../components/CsvImport';
 import { CATEGORIES } from '../constants/categories';
+import CsvImport from '../components/CsvImport';
 
 function Transactions() {
   const { token } = useAuth();
@@ -10,6 +10,7 @@ function Transactions() {
   const [form, setForm] = useState({ date: '', description: '', category: '', amount: '', type: 'expense' });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     getTransactions(token)
@@ -44,11 +45,14 @@ function Transactions() {
   };
 
   const handleDelete = async (id) => {
+    setDeletingId(id);
     try {
       await deleteTransaction(token, id);
       setTransactions(transactions.filter(t => t.id !== id));
     } catch (err) {
       console.error('Failed to delete transaction:', err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -79,9 +83,9 @@ function Transactions() {
         <input type="date" name="date" value={form.date} onChange={handleChange} required />
         <input type="text" name="description" placeholder="Description" value={form.description} onChange={handleChange} />
         <select name="category" value={form.category} onChange={handleChange} required>
-  <option value="" disabled>Select category</option>
-  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-</select>
+          <option value="" disabled>Select category</option>
+          {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+        </select>
         <input type="number" name="amount" placeholder="Amount" value={form.amount} onChange={handleChange} required />
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="expense">Expense</option>
@@ -108,8 +112,13 @@ function Transactions() {
                   <span className={`amount ${t.type === 'income' ? 'amount--in' : 'amount--out'}`}>R{t.amount}</span>
                 </td>
                 <td style={{ textAlign: 'right' }}>
-                  <button className="btn btn-quiet" onClick={() => handleEdit(t)} style={{ marginRight: 6 }}>Edit</button>
-                  <button className="btn btn-quiet" onClick={() => handleDelete(t.id)}>Delete</button>
+                  <button className="btn btn-quiet" onClick={() => handleEdit(t)} style={{ marginRight: 6 }} disabled={deletingId === t.id}>
+                    Edit
+                  </button>
+                  <button className="btn btn-quiet" onClick={() => handleDelete(t.id)} disabled={deletingId === t.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {deletingId === t.id && <span className="spinner" />}
+                    {deletingId === t.id ? 'Deleting...' : 'Delete'}
+                  </button>
                 </td>
               </tr>
             ))}
