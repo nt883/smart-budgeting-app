@@ -65,7 +65,7 @@ function Login() {
         <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
           {loading ? 'Logging in...' : 'Log in'}
         </button>
-        <p className="auth-footer-link">No account? <Link to="/signup">Sign up</Link> · <Link to="/forgot-password">Forgot password</Link></p>
+        <p className="auth-footer-link">No account? <Link to="/signup">Sign up</Link> </p>
       </form>
     </div>
   );

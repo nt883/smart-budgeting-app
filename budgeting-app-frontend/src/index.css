@@ -217,6 +217,25 @@ input::placeholder { color: var(--ash-dim); }
   padding: 0 28px;
   z-index: 10;
 }
+.topbar-brand {
+  padding-right: 32px;
+  margin-right: 16px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+.topbar-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #00D97E; /* or whatever your accent/brand color is elsewhere in the app */
+  letter-spacing: -0.02em;
+}
+.topbar-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cursor);
+  letter-spacing: -0.02em;
+}
 .topbar-brand { font-family:'Space Mono', monospace; font-size: 14px; color: var(--cursor); }
 .topbar-nav { display: flex; align-items: center; gap: 4px; }
 .topbar-link {

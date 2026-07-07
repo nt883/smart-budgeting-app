@@ -69,7 +69,9 @@ function Navbar() {
 
   return (
     <nav className="topbar">
-      <span className="topbar-brand">[ledger]</span>
+      <span className="topbar-brand">
+  <span className="topbar-brand-mark">▪</span> Ledger
+</span>
 
       <div className="topbar-nav">
         {links.map(link => {
