@@ -12,6 +12,7 @@ import Budgets from './pages/Budgets';
 import Insights from './pages/Insights';
 import Goals from './pages/Goals';
 import ShoppingList from './pages/ShoppingList';
+import Settings from './pages/Settings';
 
 const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password'];
 
@@ -45,6 +46,7 @@ function App() {
             <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
             <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
             <Route path="/shopping-list" element={<ProtectedRoute><ShoppingList /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           </Routes>
         </Shell>
       </BrowserRouter>
