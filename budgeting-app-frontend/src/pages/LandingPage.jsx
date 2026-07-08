@@ -10,7 +10,7 @@ function Landing() {
   return (
     <div className="landing">
       <nav className="landing-nav">
-        <Link to="/" className="brand-mark" style={{ marginBottom: 0 }}>[ledger]</Link>
+        <span />
         <div className="landing-nav-links">
           <Link to="/login" className="btn btn-quiet">Log in</Link>
           <Link to="/signup" className="btn btn-primary">Sign up</Link>
@@ -18,6 +18,7 @@ function Landing() {
       </nav>
 
       <div className="landing-hero">
+        <span className="landing-brand-hero">[ledger]</span>
         <p className="landing-eyebrow">Personal finance, kept honest</p>
         <h1 className="landing-headline">Know exactly where your money goes — before it's gone.</h1>
         <p className="landing-sub">
@@ -65,7 +66,10 @@ function Landing() {
         </div>
       </div>
 
-      <footer className="landing-footer">[ledger] — built for people who actually want to know where their money goes.</footer>
+      <footer className="landing-footer-full">
+        <p className="landing-footer-copy">[ledger] © {new Date().getFullYear()}. Built for people who actually want to know where their money goes.
+          By Ndivhuwo & Ntando</p>
+      </footer>
     </div>
   );
 }

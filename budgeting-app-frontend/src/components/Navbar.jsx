@@ -70,7 +70,7 @@ function Navbar() {
   return (
     <nav className="topbar">
       <span className="topbar-brand">
-  <span className="topbar-brand-mark">▪</span> Ledger
+  <span className="topbar-brand-mark">▪[ledger]</span>
 </span>
 
       <div className="topbar-nav">
