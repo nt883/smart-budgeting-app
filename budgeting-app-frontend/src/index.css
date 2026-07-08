@@ -339,3 +339,5 @@ input::placeholder { color: var(--ash-dim); }
 
   .ledger-table-wrap { overflow-x: auto; }
 }
+
+.stat-grid--four { grid-template-columns: repeat(4, 1fr); }

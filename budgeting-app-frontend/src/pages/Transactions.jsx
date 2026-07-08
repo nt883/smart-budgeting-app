@@ -11,6 +11,7 @@ function Transactions() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     getTransactions(token)
@@ -23,6 +24,7 @@ function Transactions() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const payload = { ...form, amount: Number(form.amount) };
     try {
       if (editingId) {
@@ -36,6 +38,8 @@ function Transactions() {
       setForm({ date: '', description: '', category: '', amount: '', type: 'expense' });
     } catch (err) {
       console.error('Failed to save transaction:', err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -91,7 +95,10 @@ function Transactions() {
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
-        <button type="submit" className="btn btn-primary">{editingId ? 'Update' : 'Add'} transaction</button>
+        <button type="submit" className="btn btn-primary" disabled={submitting} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          {submitting && <span className="spinner" />}
+          {submitting ? (editingId ? 'Updating...' : 'Adding...') : (editingId ? 'Update' : 'Add') + ' transaction'}
+        </button>
       </form>
 
       {loading && <div className="skeleton" style={{ height: 240 }} />}
@@ -125,7 +132,7 @@ function Transactions() {
             ))}
           </tbody>
         </table>
-         </div>
+        </div>
       )}
     </div>
   );

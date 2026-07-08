@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getDashboardSummary } from '../api/dashboard';
 
 const COLORS = ['#141414', '#D8D4C8', '#585650', '#B0AC9E', '#3A3934', '#8C887A', '#EDE9DD', '#726E62'];
+const SAVINGS_CATEGORY = 'Savings';
 
 function monthLabel(ym) {
   const [y, m] = ym.split('-');
@@ -26,6 +27,7 @@ function Dashboard() {
   }, [token]);
 
   const categoryData = summary ? Object.entries(summary.spend_by_category).map(([name, value]) => ({ name, value })) : [];
+  const savedThisMonth = summary?.spend_by_category?.[SAVINGS_CATEGORY] || 0;
 
   return (
     <div className="page">
@@ -50,7 +52,7 @@ function Dashboard() {
 
       {!loading && summary && (
         <>
-          <div className="stat-grid">
+          <div className={`stat-grid ${savedThisMonth > 0 ? 'stat-grid--four' : ''}`}>
             <div className="stat-card">
               <p className="stat-label">Income</p>
               <p className="stat-value">R{summary.total_income.toLocaleString()}</p>
@@ -63,6 +65,12 @@ function Dashboard() {
               <p className="stat-label">Net balance</p>
               <p className="stat-value">{summary.net_balance < 0 ? '\u2212' : ''}R{Math.abs(summary.net_balance).toLocaleString()}</p>
             </div>
+            {savedThisMonth > 0 && (
+              <div className="stat-card">
+                <p className="stat-label">Saved this month</p>
+                <p className="stat-value">R{savedThisMonth.toLocaleString()}</p>
+              </div>
+            )}
           </div>
 
           <div className="card">
