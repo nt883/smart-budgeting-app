@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,9 +29,10 @@ const icons = {
       <circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.6"/><circle cx="10" cy="10" r="0.8" fill="currentColor" stroke="none"/>
     </svg>
   ),
-  shopping: (
+  settings: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 7h10l-1 9H6L5 7z"/><path d="M7.5 7V5.5a2.5 2.5 0 015 0V7"/>
+      <circle cx="10" cy="10" r="2.6"/>
+      <path d="M10 3v1.6M10 15.4V17M17 10h-1.6M4.6 10H3M14.9 5.1l-1.1 1.1M6.2 13.7l-1.1 1.1M14.9 14.9l-1.1-1.1M6.2 6.3L5.1 5.2"/>
     </svg>
   ),
   logout: (
@@ -38,18 +40,19 @@ const icons = {
       <path d="M8 16H4.5A1.5 1.5 0 013 14.5v-9A1.5 1.5 0 014.5 4H8"/><path d="M13 13l4-3-4-3M17 10H8"/>
     </svg>
   ),
-  settings: (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
-    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-  </svg>
-),
+  menu: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+  ),
+  close: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+  ),
 };
 
 function Navbar() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -62,22 +65,28 @@ function Navbar() {
     { to: '/budgets', label: 'Budgets', icon: icons.budgets },
     { to: '/insights', label: 'Insights', icon: icons.insights },
     { to: '/goals', label: 'Goals', icon: icons.goals },
-    { to: '/shopping-list', label: 'Shopping List', icon: icons.shopping },
   ];
 
   const initial = user?.email ? user.email[0].toUpperCase() : '?';
 
   return (
     <nav className="topbar">
-      <span className="topbar-brand">
-  <span className="topbar-brand-mark">▪[ledger]</span>
-</span>
+      <span className="topbar-brand">[ledger]</span>
 
-      <div className="topbar-nav">
+      <button className="topbar-hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
+        {mobileOpen ? icons.close : icons.menu}
+      </button>
+
+      <div className={`topbar-nav ${mobileOpen ? 'topbar-nav--open' : ''}`}>
         {links.map(link => {
           const active = location.pathname === link.to;
           return (
-            <Link key={link.to} to={link.to} className={`topbar-link ${active ? 'topbar-link--active' : ''}`}>
+            <Link
+              key={link.to}
+              to={link.to}
+              className={`topbar-link ${active ? 'topbar-link--active' : ''}`}
+              onClick={() => setMobileOpen(false)}
+            >
               {link.icon}
               <span>{link.label}</span>
             </Link>
@@ -86,15 +95,11 @@ function Navbar() {
       </div>
 
       <div className="topbar-right">
-  <Link to="/settings" className="topbar-logout" title="Settings">
-    {icons.settings}
-  </Link>
-  <div className="topbar-avatar">{initial}</div>
-  <span className="topbar-user-email">{user?.email}</span>
-  <button className="topbar-logout" onClick={handleLogout} title="Log out">
-    {icons.logout}
-  </button>
-</div>
+        <Link to="/settings" className="topbar-logout" title="Settings">{icons.settings}</Link>
+        <div className="topbar-avatar">{initial}</div>
+        <span className="topbar-user-email">{user?.email}</span>
+        <button className="topbar-logout" onClick={handleLogout} title="Log out">{icons.logout}</button>
+      </div>
     </nav>
   );
 }

@@ -41,6 +41,7 @@ function CsvImport({ onImport }) {
       {preview.length > 0 && (
         <div className="card" style={{ marginTop: '12px' }}>
           <p className="stat-label" style={{ marginBottom: 10 }}>Preview — {preview.length} rows</p>
+          <div className="ledger-table-wrap">
           <table className="ledger-table">
             <thead><tr>{Object.keys(preview[0]).map(key => <th key={key}>{key}</th>)}</tr></thead>
             <tbody>
@@ -49,6 +50,7 @@ function CsvImport({ onImport }) {
               ))}
             </tbody>
           </table>
+          </div>
           <button onClick={confirmImport} className="btn btn-primary" style={{ marginTop: '12px' }}>Confirm import</button>
         </div>
       )}

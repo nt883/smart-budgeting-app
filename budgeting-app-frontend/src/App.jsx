@@ -5,16 +5,14 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/LandingPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Insights from './pages/Insights';
 import Goals from './pages/Goals';
-import ShoppingList from './pages/ShoppingList';
 import Settings from './pages/Settings';
 
-const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password'];
+const PUBLIC_PATHS = ['/', '/login', '/signup'];
 
 function Shell({ children }) {
   const location = useLocation();
@@ -39,13 +37,11 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
             <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
             <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
             <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
-            <Route path="/shopping-list" element={<ProtectedRoute><ShoppingList /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           </Routes>
         </Shell>

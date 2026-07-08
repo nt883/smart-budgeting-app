@@ -98,6 +98,7 @@ function Transactions() {
       {!loading && transactions.length === 0 && <div className="empty-state">No transactions yet — add one above or import a CSV.</div>}
 
       {!loading && transactions.length > 0 && (
+        <div className="ledger-table-wrap">
         <table className="ledger-table">
           <thead>
             <tr><th>Date</th><th>Description</th><th>Category</th><th style={{textAlign:'right'}}>Amount</th><th></th></tr>
@@ -124,6 +125,7 @@ function Transactions() {
             ))}
           </tbody>
         </table>
+         </div>
       )}
     </div>
   );
